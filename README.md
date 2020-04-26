@@ -1,4 +1,4 @@
-# WSPOTIFY
+# WBOHUSLANINGEN
 
 Brute forcer for Bohuslaningen.se (swedish news magazine)
 
@@ -13,7 +13,7 @@ Brute forcer for Bohuslaningen.se (swedish news magazine)
 
 ## Requirements
 
-* curlö
+* curl
 
 ## Authors: 
 
