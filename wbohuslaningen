@@ -39,6 +39,14 @@ if [[ $EUID -ne "0" ]]; then
    exit 1
 fi
 
+if [[ -z "$1" ]]; then
+   banner
+   echo -e "You must choose at least one database ... "
+   echo -e "Example usage: ./wbohuslaningen database.txt"
+   echo -e "-----------------------------------------------------------"
+   exit 1
+fi
+
 if [[ ! -d /root/cracked-accounts ]]; then
    mkdir -p /root/cracked-accounts
 fi
